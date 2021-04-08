@@ -27,6 +27,7 @@ provider:
   environment:
     stripeSecretKey: ${env:STRIPE_SECRET_KEY}
     tableName: !ImportValue "${self:custom.sstApp}-TableName"
+    categoriesTableName: Categories
 
   iamRoleStatements:
     - Effect: Allow
@@ -114,6 +115,32 @@ functions:
       - http:
           path: billing
           method: post
+          cors: true
+          authorizer: aws_iam
+
+  categories-create:
+  # Defines an HTTP API endpoint that calls the main function in db/categories.js
+  # - path: url path is /categories
+  # - method: POST request
+  # - authorizer: authenticate using the AWS IAM role
+    handler: db/categories.create
+    events:
+      - http:
+          path: categories
+          method: post
+          cors: true
+          authorizer: aws_iam
+
+  categories-get:
+  # Defines an HTTP API endpoint that calls the main function in db/categories.js
+  # - path: url path is /categories
+  # - method: POST request
+  # - authorizer: authenticate using the AWS IAM role
+    handler: db/categories.get
+    events:
+      - http:
+          path: categories/{id}
+          method: get
           cors: true
           authorizer: aws_iam
 
